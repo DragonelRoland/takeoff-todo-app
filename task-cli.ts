@@ -42,6 +42,20 @@ async function addTask(description: string): Promise<void> {
   console.log(`Task added: ${description}`);
 }
 
+async function listTasks(filter?: 'todo' | 'in-progress' | 'done'): Promise<void> {
+  const tasks = await readTasks();
+  const filteredTasks = filter ? tasks.filter(t => t.status === filter) : tasks;
+  
+  if (filteredTasks.length === 0) {
+    console.log('No tasks found.');
+    return;
+  }
+
+  filteredTasks.forEach(task => {
+    console.log(`[${task.id}] ${task.description} (${task.status})`);
+  });
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const command = args[0];
@@ -55,7 +69,7 @@ async function main() {
       await addTask(args.slice(1).join(' '));
       break;
     case 'list':
-      console.log('List tasks (not implemented yet)');
+      await listTasks(args[1] as 'todo' | 'in-progress' | 'done' | undefined);
       break;
     default:
       console.log('Unknown command. Available commands: add, list');
